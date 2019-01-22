@@ -29,7 +29,7 @@ Caso você não manje de Angular, encorajamos que você nos envie a API. Claro, 
 
 ### Requisitos que devem ser implementados
 
-* Baixe o arquivo 2018-1_CA.csv que se encontra no nosso repositório e crie uma API REST seguindo os tópicos abaixo
+* Baixe o arquivo 2018-1_CA.csv por meio do link http://www.anp.gov.br/images/dadosabertos/precos/2018-1_CA.csv e crie uma API REST seguindo os tópicos especificados a seguir
 * Implemente uma API que possui autenticação JWT
 * Implemente uma documentação iterativa. O acesso a essa URI não requer autenticação
 * Implementar recurso para CRUD de usuários
