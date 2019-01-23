@@ -31,7 +31,7 @@ Caso você não manje de Angular, encorajamos que você nos envie a API. Claro, 
 
 * Baixe o arquivo 2018-1_CA.csv por meio do link http://www.anp.gov.br/images/dadosabertos/precos/2018-1_CA.csv e crie uma API REST seguindo os tópicos especificados a seguir
 * Implemente uma API que possui autenticação JWT
-* Implemente uma documentação iterativa. O acesso a essa URI não requer autenticação
+* Implemente uma documentação interativa. O acesso a essa URI não requer autenticação
 * Implementar recurso para CRUD de usuários
 * Implementar recurso para CRUD de histórico de preço de combustível
 * Implementar recurso para importação de csv
@@ -41,7 +41,7 @@ Caso você não manje de Angular, encorajamos que você nos envie a API. Claro, 
 * Implementar recurso que retorne os dados agrupados pela data da coleta
 * Implementar recurso que retorne o valor médio do valor da compra e do valor da venda por município
 * Implementar recurso que retorne o valor médio do valor da compra e do valor da venda por bandeira
-* OBS: Você deve deduzir quais são as entidades do domínio necessárias para completar a atividade
+* OBS: Você deve deduzir quais são as entidades do domínio necessárias para completar a atividade, tal como os relacionamentos, etc
 
 ### Não entregue a atividade sem isso
 
