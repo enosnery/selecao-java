@@ -57,7 +57,7 @@ O uso do swagger cairia muito bem aqui
 
 * Crie um fork dessa avaliação
 * Desenvolva
-* Envie e-mail para dmoreira@indracompany.com, gsavio@indracompany.com e bassisx@indracompany.com sinalizando a entrega
+* Envie e-mail para dmoreira@indracompany.com, gsavio@indracompany.com, bassisx@indracompany.com e rvianal@indracompany.com sinalizando a entrega
 * Você possui 3 dias para entregar a atividade. Que comecem os jogos :-)
 
 
