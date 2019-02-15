@@ -15,22 +15,23 @@ Caso você não manje de Angular, encorajamos que você nos envie a API. Claro, 
 
 ### O que será avaliado?
 
-* Se os requisitos foram atendidos
-* Uso da stack spring
+* Todos os requistos devem ser atendidos
+* Uso da stack Spring
 * Uso do padrão arquitetural MVC (no backend e no frontend)
-* Padrões de projeto
-* Solid
+* Padrões de projeto e SOLID
 * Coesão
-* Acoplamento
+* Baixo acoplamento
 * Polimorfismo
 * Uso dos plugins do maven
 * Uso do webpack
+* Documentação interativa da API
+* Evitar código extremamente verboso
+* Chamadas REST escritas no Visual Code Studio com o plugin RestClient. Iremos fazer chamadas direta a sua API sem o front também. Precisamos das requisições HTTP já montadas para todos os recursos
 
 
 ### Requisitos que devem ser implementados
 
 * Baixe o arquivo 2018-1_CA.csv por meio do link http://www.anp.gov.br/images/dadosabertos/precos/2018-1_CA.csv e crie uma API REST seguindo os tópicos especificados a seguir
-* Implemente uma API que possui autenticação JWT
 * Implemente uma documentação interativa. O acesso a essa URI não requer autenticação
 * Implementar recurso para CRUD de usuários
 * Implementar recurso para CRUD de histórico de preço de combustível
@@ -56,11 +57,12 @@ O uso do swagger cairia muito bem aqui
 
 * Crie um fork dessa avaliação
 * Desenvolva
-* Envie e-mail para dmoreira@indracompany.com e gsavio@indracompany.com sinalizando a entrega
+* Envie e-mail para dmoreira@indracompany.com, gsavio@indracompany.com e bassisx@indracompany.com sinalizando a entrega
 * Você possui 3 dias para entregar a atividade. Que comecem os jogos :-)
 
 
 ### O que me desclassificaria automaticamente?
 
-* Commitar sem seguir a regra anterior
+* Commitar sem seguir as regras dos tópicos anteriores
+* Sua aplicação não subir
 * Não entregar a atividade dentro do prazo estabelecido
