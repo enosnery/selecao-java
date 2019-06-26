@@ -13,13 +13,17 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-    private Integer id;
+    private Long id;
 
     private String name;
 
+    @Column(unique = true)
     private String login;
 
     private String password;
+
+    public User(){
+    }
 
     public User(String name, String login, String password){
         this.name = name;
@@ -27,11 +31,11 @@ public class User {
         this.password = password;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

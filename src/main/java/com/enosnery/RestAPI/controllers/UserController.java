@@ -1,34 +1,28 @@
 package com.enosnery.RestAPI.controllers;
 
+import com.enosnery.RestAPI.forms.LoginForm;
 import com.enosnery.RestAPI.models.User;
 import com.enosnery.RestAPI.services.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
 
-    private final
+    @Autowired
     UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @PostMapping(value = "/login", produces = "application/json")
+    public Long login(@RequestBody LoginForm request){
+        return userService.findByLoginAndPassword(request.login, request.password);
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
-    public int login(){
-        User user = new User("Enos", "teste", "teste");
-        user.setId(0);
-        userService.saveUser(user);
-        return user.getId();
     }
 
     @PostMapping(value = "/user/insert")
-    public int newUser(){
-
-        return 0;
+    public Long newUser(@RequestBody User request){
+        User user = new User(request.getName(), request.getLogin(), request.getPassword());
+        userService.saveUser(user);
+        return user.getId();
     }
 
 }

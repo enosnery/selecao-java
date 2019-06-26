@@ -1,7 +1,7 @@
 package com.enosnery.RestAPI.services;
 
 import com.enosnery.RestAPI.models.User;
-import com.enosnery.RestAPI.repositories.UserRepository;
+import com.enosnery.RestAPI.interfaces.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +14,10 @@ public class UserService {
 
     public void saveUser(User user){
         userRepository.save(user);
+    }
+
+    public Long findByLoginAndPassword(String login, String pass){
+        return userRepository.findByLoginAndPassword(login, pass).getId();
     }
 
 
