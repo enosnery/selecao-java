@@ -3,16 +3,17 @@ package com.enosnery.RestAPI.models;
 
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+
+@SequenceGenerator(name="seq", initialValue=0, allocationSize=100)
 @Entity
+
 public class User {
 
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+    private Integer id;
 
     private String name;
 
@@ -24,7 +25,6 @@ public class User {
         this.name = name;
         this.login = login;
         this.password = password;
-
     }
 
     public int getId() {

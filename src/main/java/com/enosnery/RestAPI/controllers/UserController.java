@@ -1,7 +1,7 @@
 package com.enosnery.RestAPI.controllers;
 
 import com.enosnery.RestAPI.models.User;
-import com.enosnery.RestAPI.repositories.UserRepository;
+import com.enosnery.RestAPI.services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,11 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-    @RequestMapping(value = "/login/", method = RequestMethod.GET, produces = "application/json")
-    public User login(){
-        User user = new User("Enos", "teste", "teste");
+    private final
+    UserService userService;
 
-        return user;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
+    public int login(){
+        User user = new User("Enos", "teste", "teste");
+        user.setId(0);
+        userService.saveUser(user);
+        return user.getId();
     }
 
     @PostMapping(value = "/user/insert")
