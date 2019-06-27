@@ -20,5 +20,9 @@ public class UserService {
         return userRepository.findByLoginAndPassword(login, pass).getId();
     }
 
+    public void deleteUser(Long id){
+        userRepository.deleteById(id);
+    }
+
 
 }

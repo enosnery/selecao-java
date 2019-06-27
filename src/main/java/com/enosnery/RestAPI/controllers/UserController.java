@@ -25,4 +25,9 @@ public class UserController {
         return user.getId();
     }
 
+    @PostMapping(value = "/user/delete/{id}")
+    public void deleteUser(@RequestParam Long id){
+        userService.deleteUser(id);
+    }
+
 }
