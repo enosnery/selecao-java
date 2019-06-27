@@ -14,7 +14,8 @@ public interface PriceTableItemRepository extends JpaRepository<PriceTableItem, 
 
     List<PriceTableItem> findByRegion(String region);
 
-    @Query(nativeQuery = true, value = "SELECT distributor as dist, COUNT(distributor) as count " +
+    @Query(nativeQuery = true, value = "SELECT distributor, COUNT(distributor) as count " +
             "FROM price_table GROUP BY distributor")
-    List<PriceTableItem> groupByDistributor();
+    List<PriceTableResultInterface> groupByDistributor();
 }
+
