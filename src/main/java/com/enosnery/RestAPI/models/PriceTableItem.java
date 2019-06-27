@@ -34,6 +34,9 @@ public class PriceTableItem {
 
     private String flag;
 
+    public PriceTableItem() {
+    }
+
     public PriceTableItem(String region, String state, String city, String distributor, Long installationCode, String product, Date collectDate, Double purchasePrice, Double salePrice, String measurement, String flag) {
         this.region = region;
         this.state = state;

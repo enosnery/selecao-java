@@ -19,15 +19,27 @@ public class UserController {
     }
 
     @PostMapping(value = "/user/insert")
-    public Long newUser(@RequestBody User request){
+    public Long insertUser(@RequestBody User request){
         User user = new User(request.getName(), request.getLogin(), request.getPassword());
         userService.saveUser(user);
         return user.getId();
     }
 
-    @PostMapping(value = "/user/delete/{id}")
-    public void deleteUser(@RequestParam Long id){
+    @PostMapping(value = "/user/update")
+    public String updateUser(@RequestBody User request){
+        User update = userService.findByLogin(request.getLogin());
+        if(update.getLogin()!= null) {
+            userService.saveUser(update);
+            return update.getId() != null ? "Atualizado!" : "Problemas ao atualizar.";
+        }else{
+            return "Esse login não existe.";
+        }
+    }
+
+    @PostMapping(value = "/user/delete")
+    public String deleteUser(@RequestParam Long id){
         userService.deleteUser(id);
+        return "Usuário deletado.";
     }
 
 }

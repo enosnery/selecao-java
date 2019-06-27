@@ -20,6 +20,10 @@ public class UserService {
         return userRepository.findByLoginAndPassword(login, pass).getId();
     }
 
+    public User findByLogin(String login){
+        return userRepository.findByLogin(login);
+    }
+
     public void deleteUser(Long id){
         userRepository.deleteById(id);
     }
