@@ -1,7 +1,6 @@
 package com.enosnery.RestAPI.services;
 
-import com.enosnery.RestAPI.interfaces.PriceTableItemRepository;
-import com.enosnery.RestAPI.interfaces.PriceTableResultInterface;
+import com.enosnery.RestAPI.interfaces.*;
 import com.enosnery.RestAPI.models.PriceTableItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,8 +51,20 @@ public class PriceTableService {
         return priceTableItemRepository.findByRegion(region);
     }
 
-    public List<PriceTableResultInterface> groupByDistributor(){
+    public List<PriceTableDistributorGroup> groupByDistributor(){
         return priceTableItemRepository.groupByDistributor();
+    }
+
+    public List<PriceTableDateGroup> groupByDate(){
+        return priceTableItemRepository.groupByDate();
+    }
+
+    public List<PriceTableAverageCity> groupAveragesByCity(){
+        return priceTableItemRepository.groupAverageByCity();
+    }
+
+    public List<PriceTableAverageFlag> groupAveragesByFlag(){
+        return priceTableItemRepository.groupAverageByFlag();
     }
 
 

@@ -1,11 +1,14 @@
 package com.enosnery.RestAPI.models;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @SequenceGenerator(name="seq1", initialValue=0, allocationSize=100)
 @Entity
 @Table(name = "PriceTable")
+@ApiModel(value = "Item da tabela de preço")
 public class PriceTableItem {
 
     @Id
