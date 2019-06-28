@@ -6,6 +6,7 @@ import com.enosnery.RestAPI.interfaces.PriceTableDateGroup;
 import com.enosnery.RestAPI.interfaces.PriceTableDistributorGroup;
 import com.enosnery.RestAPI.models.PriceTableItem;
 import com.enosnery.RestAPI.services.PriceTableService;
+import com.enosnery.RestAPI.utils.CSVImport;
 import com.google.gson.Gson;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -109,8 +110,9 @@ public class PriceTableController {
     }
 
     @PostMapping(value = "/prices/import", consumes = {"multipart/form-data"})
-    public String importCSV(@RequestPart("file") MultipartFile file){
-
+    public String importCSV(@RequestPart("file") MultipartFile file) throws Exception {
+        List<String[]> list = priceTableService.readAll(file);
+        priceTableService.saveAll(list);
         return "CSV importado!";
     }
 

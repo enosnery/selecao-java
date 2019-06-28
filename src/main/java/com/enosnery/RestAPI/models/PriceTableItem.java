@@ -3,6 +3,8 @@ package com.enosnery.RestAPI.models;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @SequenceGenerator(name="seq1", initialValue=0, allocationSize=100)
@@ -52,6 +54,30 @@ public class PriceTableItem {
         this.salePrice = salePrice;
         this.measurement = measurement;
         this.flag = flag;
+    }
+
+    public PriceTableItem(String[] csv) throws ParseException {
+        this.region = csv[0];
+        this.state = csv[1];
+        this.city = csv[2];
+        this.distributor = csv[3];
+        this.installationCode = Long.parseLong(csv[4]);
+        this.product = csv[5];
+        this.collectDate = new SimpleDateFormat("dd/MM/yyyy").parse(csv[6]);
+        if(csv[7] != null && !(csv[7].equals("")) && !(csv[7].isEmpty())) {
+            String number = csv[7].replace(",", ".");
+            this.purchasePrice = Double.parseDouble(number);
+        }else{
+            this.purchasePrice = 0d;
+        }
+        if(csv[8] != null && !(csv[8].equals("")) && !(csv[8].isEmpty())) {
+            String number = csv[8].replace(",", ".");
+            this.salePrice = Double.parseDouble(number);
+        }else{
+            this.purchasePrice = 0d;
+        }
+        this.measurement = csv[9];
+        this.flag = csv[10];
     }
 
     public Long getId() {

@@ -1,19 +1,13 @@
 package com.enosnery.RestAPI.utils;
 
-import com.enosnery.RestAPI.models.PriceTableItem;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
-import java.io.Reader;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 public class CSVImport {
-    public List<String[]> readAll(Reader reader) throws Exception {
-        CSVReader csvReader = new CSVReader(reader);
-        List<String[]> list = new ArrayList<>();
-        list = csvReader.readAll();
-        reader.close();
-        csvReader.close();
-        return list;
-    }
+
 }
