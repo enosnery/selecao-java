@@ -16,8 +16,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Long findByLoginAndPassword(String login, String pass){
-        return userRepository.findByLoginAndPassword(login, pass).getId();
+    public User findByLoginAndPassword(String login, String pass){
+        return userRepository.findByLoginAndPassword(login, pass);
     }
 
     public User findByLogin(String login){

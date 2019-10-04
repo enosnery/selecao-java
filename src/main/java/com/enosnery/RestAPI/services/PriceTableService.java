@@ -13,9 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
@@ -55,7 +53,7 @@ public class PriceTableService {
 
     public Double averageByCity(String city){
         Double sum = 0d;
-        Double average = 0d;
+        Double average;
         int amount = 0;
         List<PriceTableItem> list = priceTableItemRepository.findByCity(city);
         for (PriceTableItem pp : list){

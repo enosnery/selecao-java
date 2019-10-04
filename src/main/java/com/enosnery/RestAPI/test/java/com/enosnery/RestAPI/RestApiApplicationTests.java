@@ -1,4 +1,4 @@
-package com.enosnery.RestAPI;
+package com.enosnery.RestAPI.test.java.com.enosnery.RestAPI;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
