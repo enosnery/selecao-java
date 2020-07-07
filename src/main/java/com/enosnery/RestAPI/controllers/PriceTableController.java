@@ -4,11 +4,14 @@ import com.enosnery.RestAPI.interfaces.PriceTableAverageCity;
 import com.enosnery.RestAPI.interfaces.PriceTableAverageFlag;
 import com.enosnery.RestAPI.interfaces.PriceTableDateGroup;
 import com.enosnery.RestAPI.interfaces.PriceTableDistributorGroup;
+import com.enosnery.RestAPI.models.AverageResponseItem;
+import com.enosnery.RestAPI.models.GroupResponseItem;
 import com.enosnery.RestAPI.models.PriceTableItem;
 import com.enosnery.RestAPI.services.PriceTableService;
-import com.google.gson.Gson;
+import com.enosnery.RestAPI.utils.Constants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.catalina.connector.Response;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,171 +32,225 @@ public class PriceTableController {
     PriceTableService priceTableService;
 
     @ApiOperation(value = "Lista de todos os itens da tabela de preços.", produces = "application/json", httpMethod = "GET")
-    @RequestMapping(value = "/prices/list/all", method = RequestMethod.GET, produces = "application/json")
-    public String prices(){
-        HashMap<String, PriceTableItem> hashMap = new HashMap<>();
+    @GetMapping(value = "/prices", produces = "application/json")
+    public HashMap<String, Object> prices(){
+        HashMap<String, Object> response = new HashMap<>();
         List<PriceTableItem> list = priceTableService.findAllItems();
         if(list.size() == 0){
-            return "Não existe nenhum dado registrado";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_DATA);
+        }else{
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, list);
         }
-        for(PriceTableItem pti : list) {
-            hashMap.put("Item", pti);
-        }
-        return new Gson().toJson(hashMap);
+        return response;
     }
 
     @ApiOperation(value = "Salvar novo item na tabela de preços.", httpMethod = "POST")
-    @PostMapping(value = "/prices/insert")
-    public String insertItem(@RequestBody PriceTableItem item){
+    @PostMapping(value = "/prices")
+    public HashMap<String, Object> insertItem(@RequestBody PriceTableItem item){
+        HashMap<String, Object> response = new HashMap<>();
         PriceTableItem newItem = new PriceTableItem(item.getRegion(), item.getState(), item.getCity(), item.getDistributor(), item.getInstallationCode(), item.getProduct(), item.getCollectDate(), item.getPurchasePrice(), item.getSalePrice(), item.getMeasurement(), item.getFlag());
         priceTableService.savePriceTableItem(newItem);
         if(newItem.getId() == null || newItem.getId() == 0){
-            return "Não foi possível salvar o item.";
+            response.put(Constants.CODE, Response.SC_NOT_ACCEPTABLE);
+            response.put(Constants.MESSAGE, Constants.ERROR_SAVE);
+        }else{
+            HashMap<String, Long> map = new HashMap<>();
+            String sb = "itemId";
+            map.put(sb, newItem.getId());
+            response.put(Constants.CODE, Response.SC_CREATED);
+            response.put(Constants.RESPONSE, map);
         }
-        HashMap<String, Long> map = new HashMap<>();
-        String sb = "itemId";
-        map.put(sb, newItem.getId());
-        return new Gson().toJson(map);
+        return response;
 
     }
 
     @ApiOperation(value = "Atualizar item na tabela de preços.", httpMethod = "POST")
-    @PostMapping(value = "/prices/update")
-    public String updateItem(@RequestParam Long id){
+    @PutMapping(value = "/prices")
+    public HashMap<String, Object> updateItem(@RequestParam Long id){
+        HashMap<String, Object> response = new HashMap<>();
         PriceTableItem updateItem = priceTableService.findById(id);
         if(updateItem != null) {
             priceTableService.savePriceTableItem(updateItem);
-            return updateItem.getId() != null ? "Item Atualizado!" : "Problemas ao atualizar o item.";
+            if (updateItem.getId() != null){
+                response.put(Constants.CODE, Response.SC_OK);
+                response.put(Constants.RESPONSE, Constants.SUCCESS_UPDATED);
+            }else{
+                response.put(Constants.CODE, Response.SC_NOT_ACCEPTABLE);
+                response.put(Constants.MESSAGE, Constants.ERROR_UPDATE);
+            }
         }else{
-            return "Esse item não existe.";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_ITEM);
         }
+
+        return response;
     }
 
     @ApiOperation(value = "Remover item da tabela de preços.", httpMethod = "POST")
-    @PostMapping(value = "/prices/delete")
-    public String deleteItem (@RequestParam Long id){
+    @DeleteMapping(value = "/prices")
+    public  HashMap<String, Object> deleteItem (@RequestParam Long id){
+        HashMap<String, Object> response = new HashMap<>();
         if(id == null || id == 0){
-            return "ID Inválido. Favor verificar e tentar novamente.";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_ID);
+        }else {
+            priceTableService.deleteItem(id);
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, Constants.SUCCESS_DELETED);
         }
-        priceTableService.deleteItem(id);
-        return "Item deletado.";
+        return response;
     }
 
     @ApiOperation(value = "Média de preço de venda de combustível dado uma cidade específica.", httpMethod = "GET")
-    @RequestMapping(value = "/prices/average/city", method = RequestMethod.GET, produces = "application/json")
-    public String averageByCity(@RequestParam String city){
+    @GetMapping(value = "/prices/average/city", produces = "application/json")
+    public HashMap<String, Object> averageByCity(@RequestParam String city){
+        HashMap<String, Object> response = new HashMap<>();
         if(city == null || city.equals("") || city.isEmpty()){
-            return "Preencha os campos corretamente.";
+            response.put(Constants.CODE, Response.SC_NOT_ACCEPTABLE);
+            response.put(Constants.MESSAGE, Constants.ERROR_WRONG_DATA);
+        }else {
+            Double result = priceTableService.averageByCity(city);
+            System.out.println(result);
+            if (result == null || result == 0d || result.isNaN()) {
+                response.put(Constants.CODE, Response.SC_NO_CONTENT);
+                response.put(Constants.MESSAGE, Constants.REQUEST_NO_CITY);
+            }else {
+                response.put(Constants.CODE, Response.SC_OK);
+                String sb = "Média da Cidade " + city + " -> " + result;
+                response.put(Constants.RESPONSE, sb);
+            }
         }
-        Double result = priceTableService.averageByCity(city);
-        if(result == null || result == 0d){
-            return "Cidade inválida";
-        }
-        HashMap<String, Double> map = new HashMap<>();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Média da Cidade: ");
-        sb.append(city);
-        map.put(sb.toString(), result);
-        return new Gson().toJson(map);
+
+        return response;
     }
 
 
-    @RequestMapping(value = "/prices/list/region", method = RequestMethod.GET, produces = "application/json")
-    public String findByRegion(@RequestParam String region){
-        HashMap<String, PriceTableItem> hashMap = new HashMap<>();
+    @GetMapping(value = "/prices/list/region", produces = "application/json")
+    public  HashMap<String, Object>  findByRegion(@RequestParam String region){
+        HashMap<String, Object> response = new HashMap<>();
         if(region == null || region.equals("") || region.isEmpty()){
-            return "Preencha os campos corretamente.";
+            response.put(Constants.CODE, Response.SC_NOT_ACCEPTABLE);
+            response.put(Constants.MESSAGE, Constants.ERROR_WRONG_DATA);
+        }else {
+            List<PriceTableItem> list = priceTableService.findByRegion(region);
+            if (list.size() == 0) {
+                response.put(Constants.CODE, Response.SC_NO_CONTENT);
+                response.put(Constants.MESSAGE, Constants.REQUEST_NO_CONTENT);
+            } else {
+                response.put(Constants.CODE, Response.SC_OK);
+                response.put(Constants.RESPONSE, list);
+            }
         }
-        List<PriceTableItem> list = priceTableService.findByRegion(region);
-        if(list.size() == 0){
-            return "Não existem registros para esta região";
-        }
-        for(PriceTableItem pti : list) {
-            hashMap.put("Item", pti);
-        }
-        return new Gson().toJson(hashMap);
+
+        return response;
     }
 
-    @RequestMapping(value = "/prices/list/group", method = RequestMethod.GET, produces = "application/json")
-    public String groupByDistributor(){
-        HashMap<String, Integer> map = new HashMap<>();
+    @GetMapping(value = "/prices/list/group", produces = "application/json")
+    public  HashMap<String, Object> groupByDistributor(){
+        HashMap<String, Object> response = new HashMap<>();
+        List<GroupResponseItem> listGroupDistributor = new ArrayList<>();
         List<PriceTableDistributorGroup> list = priceTableService.groupByDistributor();
         if(list.size() == 0){
-            return "Não foi possível agrupar os dados";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_CONTENT);
+        }else {
+            for (PriceTableDistributorGroup ll : list) {
+                GroupResponseItem item = new GroupResponseItem(ll.getDistributor(), ll.getCount());
+                listGroupDistributor.add(item);
+            }
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, listGroupDistributor);
         }
-        for(PriceTableDistributorGroup ll : list){
-            map.put(ll.getDistributor(), ll.getCount());
-        }
-        return new Gson().toJson(map);
+        return response;
     }
 
-    @RequestMapping(value = "/prices/list/date", method = RequestMethod.GET, produces = "application/json")
-    public String groupByDate(){
-        HashMap<String, Integer> map = new HashMap<>();
+    @GetMapping(value = "/prices/list/date", produces = "application/json")
+    public HashMap<String, Object> groupByDate(){
+        HashMap<String, Object> response = new HashMap<>();
+        List<GroupResponseItem> listGroupDate = new ArrayList<>();
         List<PriceTableDateGroup> list = priceTableService.groupByDate();
         if(list.size() == 0){
-            return "Não foi possível agrupar os dados.";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_CONTENT);
+        }else {
+            for (PriceTableDateGroup dd : list) {
+                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                String date = format.format(dd.getDate());
+                GroupResponseItem item = new GroupResponseItem(date, dd.getCount() );
+                listGroupDate.add(item);
+            }
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, listGroupDate);
         }
-        for(PriceTableDateGroup dd : list){
-            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-            String date = format.format(dd.getDate());
-            map.put(date, dd.getCount());
 
-        }
-        return new Gson().toJson(map);
+        return response;
     }
 
-    @RequestMapping(value = "/prices/list/city", method = RequestMethod.GET, produces = "application/json")
-    public String groupAverageByCity(){
-        HashMap<String, HashMap> map = new HashMap<>();
-
+    @GetMapping(value = "/prices/list/city", produces = "application/json")
+    public HashMap<String, Object> groupAverageByCity(){
+        HashMap<String, Object> response = new HashMap<>();
+        List<AverageResponseItem> listAverageCity= new ArrayList<>();
         List<PriceTableAverageCity> list = priceTableService.groupAveragesByCity();
         if(list == null || list.size() == 0){
-            return "Nenhum valor a ser mostrado";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_CONTENT);
+        }else {
+            for (PriceTableAverageCity ptac : list) {
+                AverageResponseItem item = new AverageResponseItem(ptac.getSaleAverage(), ptac.getPurchaseAverage(), ptac.getCity());
+                listAverageCity.add(item);
+            }
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, listAverageCity);
         }
-
-        for(PriceTableAverageCity ptac : list){
-            HashMap<String, Double> mapItem = new HashMap<>();
-            mapItem.put("SaleAverage", ptac.getSaleAverage());
-            mapItem.put("PurchaseAverage", ptac.getPurchaseAverage());
-            map.put(ptac.getCity(), mapItem);
-        }
-        return new Gson().toJson(map);
+        return response;
     }
 
-    @RequestMapping(value = "/prices/list/flag", method = RequestMethod.GET, produces = "application/json")
-    public String groupAverageByFlag(){
-        HashMap<String, HashMap> map = new HashMap<>();
+    @GetMapping(value = "/prices/list/flag", produces = "application/json")
+    public HashMap<String, Object> groupAverageByFlag(){
+        HashMap<String, Object> response = new HashMap<>();
+        List<AverageResponseItem> listAverageFlag= new ArrayList<>();
         List<PriceTableAverageFlag> list = priceTableService.groupAveragesByFlag();
         if(list == null || list.size() == 0){
-            return "Nenhum valor a ser mostrado";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_NO_CONTENT);
+        }else {
+            for (PriceTableAverageFlag ptaf : list) {
+                AverageResponseItem item = new AverageResponseItem(ptaf.getSaleAverage(), ptaf.getPurchaseAverage(), ptaf.getFlag());
+                listAverageFlag.add(item);
+            }
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, listAverageFlag);
         }
-        for(PriceTableAverageFlag ptaf : list){
-            HashMap<String, Double> mapItem = new HashMap<>();
-            mapItem.put("SaleAverage", ptaf.getSaleAverage());
-            mapItem.put("PurchaseAverage", ptaf.getPurchaseAverage());
-            map.put(ptaf.getFlag(), mapItem);
-        }
-        return new Gson().toJson(map);
+        return response;
     }
 
     @PostMapping(value = "/prices/import", consumes = {"multipart/form-data"})
-    public String importCSV(@RequestPart("file") MultipartFile file) throws Exception {
+    public HashMap<String, Object> importCSV(@RequestPart("file") MultipartFile file) throws Exception {
+        HashMap<String, Object> response = new HashMap<>();
         try {
             String extension = FilenameUtils.getExtension(file.getOriginalFilename());
             if (extension != null && !(extension.equals("csv"))) {
-                return "Arquivo em Formato Inválido";
+                response.put(Constants.CODE, Response.SC_UNSUPPORTED_MEDIA_TYPE);
+                response.put(Constants.MESSAGE, Constants.INVALID_FORMAT);
+            }else{
+                List<String[]> list = priceTableService.readAll(file);
+                if (list.size() == 0) {
+                    response.put(Constants.CODE, Response.SC_BAD_REQUEST);
+                    response.put(Constants.MESSAGE, Constants.ERROR_LIST_EMPTY);
+                }else {
+                    priceTableService.saveAll(list);
+                    response.put(Constants.CODE, Response.SC_CREATED);
+                    response.put(Constants.RESPONSE, Constants.SUCCESS_IMPORTED);
+                }
             }
-            List<String[]> list = priceTableService.readAll(file);
-            if (list.size() == 0) {
-                return "Não foi possível importar os dados do CSV";
-            }
-            priceTableService.saveAll(list);
-            return "CSV importado!";
         }catch (FileUploadException fe){
             fe.printStackTrace();
-            return "Não foi adicionado nenhum arquivo.";
+            response.put(Constants.CODE, Response.SC_BAD_REQUEST);
+            response.put(Constants.MESSAGE, Constants.ERROR_NO_FILE);
         }
+        return response;
     }
 
 }
