@@ -3,7 +3,9 @@ package com.enosnery.RestAPI.controllers;
 import com.enosnery.RestAPI.forms.LoginForm;
 import com.enosnery.RestAPI.models.User;
 import com.enosnery.RestAPI.services.UserService;
+import com.enosnery.RestAPI.utils.Constants;
 import com.google.gson.Gson;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +18,25 @@ public class UserController {
     UserService userService;
 
     @PostMapping(value = "/login", produces = "application/json")
-    public String login(@RequestBody LoginForm request){
+    public HashMap<String, Object> login(@RequestBody LoginForm request){
+        HashMap<String, Object> response = new HashMap<>();
         if(request.login == null || request.login.equals("") || request.password == null || request.password.equals("")){
-            return "Preencha os campos corretamente!";
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.REQUEST_BLANK_FIELDS);
+        }else {
+            User user = userService.findByLoginAndPassword(request.login, request.password);
+            if (user == null || user.getId() == null || user.getId() == 0) {
+                response.put(Constants.CODE, Response.SC_UNAUTHORIZED);
+                response.put(Constants.MESSAGE, Constants.REQUEST_UNAUTHORIZED);
+            }else{
+                response.put(Constants.CODE, Response.SC_OK);
+                response.put(Constants.RESPONSE, user);
+            }
         }
-        User user = userService.findByLoginAndPassword(request.login, request.password);
-        if(user == null || user.getId() == null || user.getId() == 0){
-            return "Usuário e/ou Senha incorretos";
-        }
-        return new Gson().toJson(user);
-
+        return response;
     }
 
-    @PostMapping(value = "/user/insert")
+    @PostMapping(value = "/user")
     public String insertUser(@RequestBody User request){
         User user = new User(request.getName(), request.getLogin(), request.getPassword());
         userService.saveUser(user);
@@ -41,7 +49,7 @@ public class UserController {
         return new Gson().toJson(map);
     }
 
-    @PostMapping(value = "/user/update")
+    @PutMapping(value = "/user")
     public String updateUser(@RequestBody User request){
         User update = userService.findByLogin(request.getLogin());
         if(update.getLogin()!= null) {
@@ -52,7 +60,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/user/delete")
+    @DeleteMapping(value = "/user")
     public String deleteUser(@RequestParam Long id){
         if(id == 0){
             return "Preencha os campos corretamente";

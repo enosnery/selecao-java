@@ -47,7 +47,7 @@ public class PriceTableController {
     }
 
     @ApiOperation(value = "Salvar novo item na tabela de preços.", httpMethod = "POST")
-    @PostMapping(value = "/prices")
+    @PutMapping(value = "/prices")
     public HashMap<String, Object> insertItem(@RequestBody PriceTableItem item){
         HashMap<String, Object> response = new HashMap<>();
         PriceTableItem newItem = new PriceTableItem(item.getRegion(), item.getState(), item.getCity(), item.getDistributor(), item.getInstallationCode(), item.getProduct(), item.getCollectDate(), item.getPurchasePrice(), item.getSalePrice(), item.getMeasurement(), item.getFlag());

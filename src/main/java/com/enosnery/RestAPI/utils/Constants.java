@@ -14,6 +14,8 @@ public class Constants {
     public static String SUCCESS_IMPORTED = "CSV importado!";
     public static String SUCCESS_UPDATED= "Item deletado.";
     public static String SUCCESS_DELETED= "Item deletado.";
+    public static String REQUEST_UNAUTHORIZED = "Usuário e/ou Senha incorretos";
+    public static String REQUEST_BLANK_FIELDS = "Preencha os campos corretamente!";
     public static String REQUEST_NO_CONTENT = "Nenhum valor a ser mostrado.";
     public static String REQUEST_NO_DATA = "Nenhum dado registrado.";
     public static String REQUEST_NO_REGION = "Não existem registros para esta região.";
