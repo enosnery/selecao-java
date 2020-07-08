@@ -83,25 +83,4 @@ public class PriceTableService {
     public List<PriceTableAverageFlag> groupAveragesByFlag(){
         return priceTableItemRepository.groupAverageByFlag();
     }
-
-    public List<String[]> readAll(MultipartFile mfile) throws Exception {
-        File file = convert(mfile);
-        CSVReaderBuilder builder = new CSVReaderBuilder(new FileReader(file));
-        CSVReader csvReader = builder.withCSVParser(new CSVParserBuilder().withSeparator(',').build()).withSkipLines(1).build();
-        List<String[]> list;
-        list = csvReader.readAll();
-        csvReader.close();
-        return list;
-    }
-
-    public static File convert(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
-    }
-
-
-
 }

@@ -16,16 +16,16 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User findByLoginAndPassword(String login, String pass){
-        return userRepository.findByLoginAndPassword(login, pass);
-    }
-
     public User findByLogin(String login){
         return userRepository.findByLogin(login);
     }
 
     public void deleteUser(Long id){
         userRepository.deleteById(id);
+    }
+
+    public User findById(Long id){
+        return userRepository.findById(id).isPresent() ? userRepository.findById(id).get() : null;
     }
 
 

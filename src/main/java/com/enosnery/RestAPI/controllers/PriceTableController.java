@@ -33,7 +33,7 @@ public class PriceTableController {
 
     @ApiOperation(value = "Lista de todos os itens da tabela de preços.", produces = "application/json", httpMethod = "GET")
     @GetMapping(value = "/prices", produces = "application/json")
-    public HashMap<String, Object> prices(){
+    public HashMap<String, Object> getAllItems(){
         HashMap<String, Object> response = new HashMap<>();
         List<PriceTableItem> list = priceTableService.findAllItems();
         if(list.size() == 0){
@@ -47,7 +47,7 @@ public class PriceTableController {
     }
 
     @ApiOperation(value = "Salvar novo item na tabela de preços.", httpMethod = "POST")
-    @PutMapping(value = "/prices")
+    @PostMapping(value = "/prices")
     public HashMap<String, Object> insertItem(@RequestBody PriceTableItem item){
         HashMap<String, Object> response = new HashMap<>();
         PriceTableItem newItem = new PriceTableItem(item.getRegion(), item.getState(), item.getCity(), item.getDistributor(), item.getInstallationCode(), item.getProduct(), item.getCollectDate(), item.getPurchasePrice(), item.getSalePrice(), item.getMeasurement(), item.getFlag());
@@ -66,7 +66,6 @@ public class PriceTableController {
 
     }
 
-    @ApiOperation(value = "Atualizar item na tabela de preços.", httpMethod = "POST")
     @PutMapping(value = "/prices")
     public HashMap<String, Object> updateItem(@RequestParam Long id){
         HashMap<String, Object> response = new HashMap<>();
@@ -75,7 +74,7 @@ public class PriceTableController {
             priceTableService.savePriceTableItem(updateItem);
             if (updateItem.getId() != null){
                 response.put(Constants.CODE, Response.SC_OK);
-                response.put(Constants.RESPONSE, Constants.SUCCESS_UPDATED);
+                response.put(Constants.RESPONSE, Constants.SUCCESS_UPDATED_ITEM);
             }else{
                 response.put(Constants.CODE, Response.SC_NOT_ACCEPTABLE);
                 response.put(Constants.MESSAGE, Constants.ERROR_UPDATE);
@@ -88,7 +87,6 @@ public class PriceTableController {
         return response;
     }
 
-    @ApiOperation(value = "Remover item da tabela de preços.", httpMethod = "POST")
     @DeleteMapping(value = "/prices")
     public  HashMap<String, Object> deleteItem (@RequestParam Long id){
         HashMap<String, Object> response = new HashMap<>();
@@ -226,31 +224,6 @@ public class PriceTableController {
         return response;
     }
 
-    @PostMapping(value = "/prices/import", consumes = {"multipart/form-data"})
-    public HashMap<String, Object> importCSV(@RequestPart("file") MultipartFile file) throws Exception {
-        HashMap<String, Object> response = new HashMap<>();
-        try {
-            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-            if (extension != null && !(extension.equals("csv"))) {
-                response.put(Constants.CODE, Response.SC_UNSUPPORTED_MEDIA_TYPE);
-                response.put(Constants.MESSAGE, Constants.INVALID_FORMAT);
-            }else{
-                List<String[]> list = priceTableService.readAll(file);
-                if (list.size() == 0) {
-                    response.put(Constants.CODE, Response.SC_BAD_REQUEST);
-                    response.put(Constants.MESSAGE, Constants.ERROR_LIST_EMPTY);
-                }else {
-                    priceTableService.saveAll(list);
-                    response.put(Constants.CODE, Response.SC_CREATED);
-                    response.put(Constants.RESPONSE, Constants.SUCCESS_IMPORTED);
-                }
-            }
-        }catch (FileUploadException fe){
-            fe.printStackTrace();
-            response.put(Constants.CODE, Response.SC_BAD_REQUEST);
-            response.put(Constants.MESSAGE, Constants.ERROR_NO_FILE);
-        }
-        return response;
-    }
+
 
 }
