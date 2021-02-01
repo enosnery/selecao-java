@@ -26,6 +26,7 @@ import java.util.List;
 
 @Api(value = "Controle de Tabela de Preços", description = "Métodos para inclusão, alteração, remoção e chamadas personalizadas." )
 @RestController
+@CrossOrigin
 public class PriceTableController {
 
     @Autowired
