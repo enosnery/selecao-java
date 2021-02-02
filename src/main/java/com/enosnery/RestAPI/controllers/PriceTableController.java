@@ -7,6 +7,7 @@ import com.enosnery.RestAPI.interfaces.PriceTableDistributorGroup;
 import com.enosnery.RestAPI.models.AverageResponseItem;
 import com.enosnery.RestAPI.models.GroupResponseItem;
 import com.enosnery.RestAPI.models.PriceTableItem;
+import com.enosnery.RestAPI.models.User;
 import com.enosnery.RestAPI.services.PriceTableService;
 import com.enosnery.RestAPI.utils.Constants;
 import io.swagger.annotations.Api;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @Api(value = "Controle de Tabela de Preços", description = "Métodos para inclusão, alteração, remoção e chamadas personalizadas." )
 @RestController
+@CrossOrigin
 public class PriceTableController {
 
     @Autowired
@@ -46,11 +48,25 @@ public class PriceTableController {
         return response;
     }
 
+    @GetMapping(value = "/prices/{itemId}")
+    public HashMap<String, Object> getUser(@PathVariable("itemId") Long itemId){
+        HashMap<String, Object> response = new HashMap<>();
+        PriceTableItem item = priceTableService.findById(itemId);
+        if(item == null || item.getId() == null || item.getId() == 0){
+            response.put(Constants.CODE, Response.SC_NO_CONTENT);
+            response.put(Constants.MESSAGE, Constants.ERROR_NO_USER);
+        }else{
+            response.put(Constants.CODE, Response.SC_OK);
+            response.put(Constants.RESPONSE, item);
+        }
+        return response;
+    }
+
     @ApiOperation(value = "Salvar novo item na tabela de preços.", httpMethod = "POST")
     @PostMapping(value = "/prices")
     public HashMap<String, Object> insertItem(@RequestBody PriceTableItem item){
         HashMap<String, Object> response = new HashMap<>();
-        PriceTableItem newItem = new PriceTableItem(item.getRegion(), item.getState(), item.getCity(), item.getDistributor(), item.getInstallationCode(), item.getProduct(), item.getCollectDate(), item.getPurchasePrice(), item.getSalePrice(), item.getMeasurement(), item.getFlag());
+        PriceTableItem newItem = new PriceTableItem(item.getRegion(), item.getState(), item.getCity(), item.getDistributor(), item.getCnpj(), item.getProduct(), item.getCollectDate(), item.getPurchasePrice(), item.getSalePrice(), item.getMeasurement(), item.getFlag());
         priceTableService.savePriceTableItem(newItem);
         if(newItem.getId() == null || newItem.getId() == 0){
             response.put(Constants.CODE, Response.SC_NOT_ACCEPTABLE);
@@ -67,11 +83,11 @@ public class PriceTableController {
     }
 
     @PutMapping(value = "/prices")
-    public HashMap<String, Object> updateItem(@RequestParam Long id){
+    public HashMap<String, Object> updateItem(@RequestBody PriceTableItem item){
         HashMap<String, Object> response = new HashMap<>();
-        PriceTableItem updateItem = priceTableService.findById(id);
-        if(updateItem != null) {
-            priceTableService.savePriceTableItem(updateItem);
+
+        if(item != null) {
+            PriceTableItem updateItem = priceTableService.updatePriceTableItem(item);
             if (updateItem.getId() != null){
                 response.put(Constants.CODE, Response.SC_OK);
                 response.put(Constants.RESPONSE, Constants.SUCCESS_UPDATED_ITEM);
@@ -87,8 +103,8 @@ public class PriceTableController {
         return response;
     }
 
-    @DeleteMapping(value = "/prices")
-    public  HashMap<String, Object> deleteItem (@RequestParam Long id){
+    @DeleteMapping(value = "/prices/{id}")
+    public  HashMap<String, Object> deleteItem (@PathVariable("id") Long id){
         HashMap<String, Object> response = new HashMap<>();
         if(id == null || id == 0){
             response.put(Constants.CODE, Response.SC_NO_CONTENT);

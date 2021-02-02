@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
@@ -20,15 +20,12 @@ public class User {
     @Column(unique = true)
     private String login;
 
-    private String password;
-
     public User(){
     }
 
-    public User(String name, String login, String password){
+    public User(String name, String login){
         this.name = name;
         this.login = login;
-        this.password = password;
     }
 
     public Long getId() {
@@ -55,11 +52,13 @@ public class User {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", login='" + login + '\'' +
+                '}';
     }
 }

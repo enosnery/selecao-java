@@ -1,10 +1,12 @@
 package com.enosnery.RestAPI.models;
 
 import io.swagger.annotations.ApiModel;
+import org.slf4j.ILoggerFactory;
 
 import javax.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 @SequenceGenerator(name="seq1", initialValue=0, allocationSize=100)
@@ -25,7 +27,7 @@ public class PriceTableItem {
 
     private String distributor;
 
-    private Long installationCode;
+    private String cnpj;
 
     private String product;
 
@@ -42,12 +44,12 @@ public class PriceTableItem {
     public PriceTableItem() {
     }
 
-    public PriceTableItem(String region, String state, String city, String distributor, Long installationCode, String product, Date collectDate, Double purchasePrice, Double salePrice, String measurement, String flag) {
+    public PriceTableItem(String region, String state, String city, String distributor, String cnpj, String product, Date collectDate, Double purchasePrice, Double salePrice, String measurement, String flag) {
         this.region = region;
         this.state = state;
         this.city = city;
         this.distributor = distributor;
-        this.installationCode = installationCode;
+        this.cnpj = cnpj;
         this.product = product;
         this.collectDate = collectDate;
         this.purchasePrice = purchasePrice;
@@ -57,27 +59,27 @@ public class PriceTableItem {
     }
 
     public PriceTableItem(String[] csv) throws ParseException {
-        this.region = csv[0];
-        this.state = csv[1];
-        this.city = csv[2];
-        this.distributor = csv[3];
-        this.installationCode = Long.parseLong(csv[4]);
-        this.product = csv[5];
-        this.collectDate = new SimpleDateFormat("dd/MM/yyyy").parse(csv[6]);
+        this.region = csv[0].replaceAll("\\P{Print}", "");
+        this.state = csv[1].replaceAll("\\P{Print}", "");
+        this.city = csv[2].replaceAll("\\P{Print}", "");
+        this.distributor = csv[3].replaceAll("\\P{Print}", "");
+        this.cnpj = csv[4].replaceAll("\\P{Print}", "");
+        this.product = csv[5].replaceAll("\\P{Print}", "");
+        this.collectDate = new SimpleDateFormat("dd/MM/yyyy").parse(csv[6].replaceAll("\\P{Print}", ""));
         if(csv[7] != null && !(csv[7].equals("")) && !(csv[7].isEmpty())) {
-            String number = csv[7].replace(",", ".");
+            String number = csv[7].replaceAll("\\P{Print}", "").replace(",", ".");
             this.purchasePrice = Double.parseDouble(number);
         }else{
             this.purchasePrice = 0d;
         }
-        if(csv[8] != null && !(csv[8].equals("")) && !(csv[8].isEmpty())) {
-            String number = csv[8].replace(",", ".");
+        if(csv[8] != null && !(csv[8].replaceAll("\\P{Print}", "").equals("")) && !(csv[8].replaceAll("\\P{Print}", "").isEmpty())) {
+            String number = csv[8].replaceAll("\\P{Print}", "").replace(",", ".");
             this.salePrice = Double.parseDouble(number);
         }else{
-            this.purchasePrice = 0d;
+            this.salePrice = 0d;
         }
-        this.measurement = csv[9];
-        this.flag = csv[10];
+        this.measurement = csv[9].replaceAll("\\P{Print}", "");
+        this.flag = csv[10].replaceAll("\\P{Print}", "");
     }
 
     public Long getId() {
@@ -120,12 +122,12 @@ public class PriceTableItem {
         this.distributor = distributor;
     }
 
-    public Long getInstallationCode() {
-        return installationCode;
+    public String getCnpj() {
+        return cnpj;
     }
 
-    public void setInstallationCode(Long installationCode) {
-        this.installationCode = installationCode;
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public String getProduct() {

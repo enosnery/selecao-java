@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,7 +19,7 @@ public class ImportService {
     public List<String[]> readAll(MultipartFile mfile) throws Exception {
         File file = convert(mfile);
         CSVReaderBuilder builder = new CSVReaderBuilder(new FileReader(file));
-        CSVReader csvReader = builder.withCSVParser(new CSVParserBuilder().withSeparator(',').build()).withSkipLines(1).build();
+        CSVReader csvReader = builder.withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).withSkipLines(1).build();
         List<String[]> list;
         list = csvReader.readAll();
         csvReader.close();

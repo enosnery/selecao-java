@@ -22,15 +22,30 @@ public class PriceTableService {
     @Autowired
     PriceTableItemRepository priceTableItemRepository;
 
-    public void savePriceTableItem(PriceTableItem item){
-        priceTableItemRepository.save(item);
+    public PriceTableItem updatePriceTableItem(PriceTableItem item){
+        PriceTableItem updateItem = priceTableItemRepository.findById(item.getId()).get();
+        updateItem.setCity(item.getCity());
+        updateItem.setCnpj(item.getCnpj());
+        updateItem.setCollectDate(item.getCollectDate());
+        updateItem.setDistributor(item.getDistributor());
+        updateItem.setFlag(item.getFlag());
+        updateItem.setMeasurement(item.getMeasurement());
+        updateItem.setProduct(item.getProduct());
+        updateItem.setPurchasePrice(item.getPurchasePrice());
+        updateItem.setRegion(item.getRegion());
+        updateItem.setSalePrice(item.getSalePrice());
+        updateItem.setState(item.getState());
+        priceTableItemRepository.save(updateItem);
+        return updateItem;
     }
 
     public void saveAll(List<String[]> list) throws ParseException {
         PriceTableItem item;
         for(String[] itemString : list){
-            item = new PriceTableItem(itemString);
-            priceTableItemRepository.save(item);
+            if(itemString.length != 1) {
+                item = new PriceTableItem(itemString);
+                priceTableItemRepository.save(item);
+            }
         }
     }
 
@@ -82,5 +97,9 @@ public class PriceTableService {
 
     public List<PriceTableAverageFlag> groupAveragesByFlag(){
         return priceTableItemRepository.groupAverageByFlag();
+    }
+
+    public void savePriceTableItem(PriceTableItem newItem) {
+        priceTableItemRepository.save(newItem);
     }
 }
